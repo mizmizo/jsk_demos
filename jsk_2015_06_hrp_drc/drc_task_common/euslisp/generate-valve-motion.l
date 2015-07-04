@@ -447,7 +447,7 @@
    &key (arm :rarm) (overwrite-arm-side? nil)
    (stand-coords nil) (overwrite-stand-coords? nil)
    (grasp-center? nil) (overwrite-grasp-mode? nil)
-   (real? t) (test-mode? nil) (av-list nil) (use_reach-until-touch? nil))
+   (real? t) (test-mode? nil) (av-list nil) (use_reach-until-touch? t))
   (let* ((rotate-num 3)
          (valve-motion-av-list
           (if av-list
@@ -494,7 +494,7 @@
             (progn
               (send *robot* :angle-vector (car (last valve-motion-av-list)))
               (unix::sleep 1)
-              (send *ri* :reach-until-touch arm (v- (send (send *valve* :copy-worldcoords) :worldpos) (send *robot* arm :end-coords :worldpos)) :thre 3 :dist-step 4)
+              (send *ri* :reach-until-touch arm (v- (send (send *valve* :copy-worldcoords) :worldpos) (send *robot* arm :end-coords :worldpos)) :thre 3 :dist-step 4 :debug t)
               (keyshot-request)
               (hand-start-grasp :real? real?)
               ;;judge grasped or not
@@ -504,8 +504,8 @@
                 (setq grasp-pos (send (send (send *robot* arm :end-coords ) :copy-worldcoords) :pos))
                 (setq grasp-angle-vector (send *robot* :angle-vector))
                 (if (eq arm :rarm)
-                    (send *ri* :reach-until-touch arm (float-vector 0 100 0) :thre force-thre :dist-step 4 :coords-system :local)
-                  (send *ri* :reach-until-touch arm (float-vector 0 -100 0) :thre force-thre :dist-step 4 :coords-system :local)
+                    (send *ri* :reach-until-touch arm (float-vector 0 100 0) :thre force-thre :dist-step 4 :coords-system :local :debug t)
+                  (send *ri* :reach-until-touch arm (float-vector 0 -100 0) :thre force-thre :dist-step 4 :coords-system :local :debug t)
                   )
                 (send *robot* :angle-vector (send *ri* :state :potentio-vector))
                 (send *robot* :fix-leg-to-coords stand-coords)
@@ -531,8 +531,8 @@
                 (setq grasp-pos (send (send (send *robot* arm :end-coords) :copy-worldcoords) :pos))
                 (ros::ros-info (format nil "current-pos: ~A" grasp-pos)) 
                 (if (eq arm :rarm)
-                    (send *ri* :reach-until-touch arm (float-vector 0 -100 0) :thre force-thre :dist-step 4 :coords-system :local)
-                  (send *ri* :reach-until-touch arm (float-vector 0 100 0) :thre force-thre :dist-step 4 :coords-system :local)
+                    (send *ri* :reach-until-touch arm (float-vector 0 -100 0) :thre force-thre :dist-step 4 :coords-system :local :debug t)
+                  (send *ri* :reach-until-touch arm (float-vector 0 100 0) :thre force-thre :dist-step 4 :coords-system :local :debug t)
                   )
                 (send *robot* :angle-vector (send *ri* :state :potentio-vector))
                 (send *robot* :fix-leg-to-coords stand-coords)
